@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">URLShortner</string>
+    <string name="url_text">Shorten Any Url in a second</string>
+    <string name="shorten">Shorten</string>
+    <string name="shorten_txt">SHORTEN</string>
+    <string name="url_text_msg">Enter a long URL</string>
+    <string name="cutly">Powered by cutt.ly</string>
+    <string name="shorten_urls">Shorten URLs</string>
+    <string name="shortened_urls">Shortened URLs</string>
+    <string name="no_any_urls_yet">No any URLs yet</string>
+    <string name="no_url_text">You have not shortened any URLs yet :)</string>
+    <string name="dummy_short_url">https://cutt.ly/FjFxUuX</string>
+    <string name="dummy_long_url"><![CDATA[https://cutt.ly/api/api.php?key=94081e2ee39ab643abc37bf0e56c13eff5685&short=https://dribbble.com/shots/following/mobile]]></string>
 </resources>

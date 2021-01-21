@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="2dp"
+    android:orientation="horizontal"
+    android:weightSum="3">
+
+    <com.google.android.material.card.MaterialCardView
+        android:elevation="15dp"
+        android:layout_margin="5dp"
+        app:strokeWidth="1dp"
+        android:id="@+id/card_view"
+        android:layout_width="0dp"
+        app:strokeColor="@color/grey_mod"
+        app:cardCornerRadius="5dp"
+        android:backgroundTint="@color/black"
+        android:layout_height="wrap_content"
+        android:layout_weight="2.8">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/short_url"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dummy_short_url"
+                android:textColor="@color/white_light"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/long_url"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dummy_long_url" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0.2"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/share_short_url"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@null"
+            android:padding="1dp"
+            android:scaleType="fitCenter"
+            android:backgroundTint="@color/black"
+            android:src="@drawable/share_icon" />
+
+        <ImageButton
+            android:id="@+id/copy_short_url"
+            android:layout_marginTop="5dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:scaleType="fitCenter"
+            android:background="@null"
+            android:padding="1dp"
+            android:backgroundTint="@color/black"
+            android:src="@drawable/copy_icon" />
+
+        <ImageButton
+            android:id="@+id/qrcode_short_url"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@null"
+            android:layout_marginTop="4dp"
+            android:padding="2dp"
+            android:scaleType="fitCenter"
+            android:backgroundTint="@color/black"
+            android:src="@drawable/qr_icon" />
+
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
