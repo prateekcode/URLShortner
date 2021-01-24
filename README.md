@@ -7,6 +7,8 @@ URL Shortner is Android App to shorten any long URL, written in Kotlin that foll
 
 ***Download the latest apk from below 👇***
 
+[![URLShortner](https://img.shields.io/badge/URLShortner-APK-black.svg?style=for-the-badge&logo=android)](https://github.com/prateekcode/URLShortner/blob/master/app/release/app-release.apk)
+
 ## Built With 🛠
 * [Kotlin](https://kotlinlang.org/) - Official programming language for Android Development
 * [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) - For asynchronous
