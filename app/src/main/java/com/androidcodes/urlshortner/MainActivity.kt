@@ -2,7 +2,6 @@ package com.androidcodes.urlshortner
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.EditText
@@ -10,7 +9,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import br.com.simplepass.loadingbutton.customViews.CircularProgressButton
+import com.androidcodes.urlshortner.adapter.ShortListAdapter
 import com.androidcodes.urlshortner.data.UrlDatabase
 import com.androidcodes.urlshortner.data.model.UrlData
 import com.androidcodes.urlshortner.repo.Repository
@@ -28,6 +30,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var editTextLongUrl: EditText
     private lateinit var longUrl: String
     private lateinit var shortUrl: String
+    private lateinit var recyclerView: RecyclerView
+    private val recyclerAdapter: ShortListAdapter by lazy { ShortListAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         val urlDao = UrlDatabase.getDatabase(application).urlDao()
 
         editTextLongUrl = et_long_url
+
         //val viewModelFactory = ApiViewModelFactory(repo)
         //viewModel = ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
         //urlViewModel = ViewModelProvider(this).get(UrlViewModel::class.java)
@@ -46,8 +51,15 @@ class MainActivity : AppCompatActivity() {
         val viewModelFactory = ApiViewModelFactory(repository)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
 
-        invalidText.visibility = View.VISIBLE
-        layout_no_data.visibility = View.VISIBLE
+        layout_no_data.visibility = View.GONE
+        viewModel.getSavedData()
+
+        // Setup RecyclerView
+        setRecyclerView()
+
+        viewModel.getSavedData().observe(this, {
+            data -> recyclerAdapter.setData(data)
+        })
 
         shortenBtn = shorten_btn
         shortenBtn.setOnClickListener {
@@ -56,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                 shortUrl = ""
                 invalidText = invalid_url
                 invalidText.visibility = View.VISIBLE
-                layout_no_data.visibility = View.VISIBLE
+                layout_no_data.visibility = View.GONE
                 shortenBtn.startAnimation()
                 viewModel.shortUrl(API_KEY, longUrl)
                 viewModel.apiResponse.observe(this, Observer { response ->
@@ -93,4 +105,21 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+    //Setting up the RecyclerView
+    private fun setRecyclerView(){
+        recyclerView = recycler_item
+        val layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = recyclerAdapter
+        layoutManager.stackFromEnd = true
+        layoutManager.reverseLayout = true
+    }
+
+
+
+
+
+
+
 }
