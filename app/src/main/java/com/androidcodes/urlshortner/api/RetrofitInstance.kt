@@ -1,6 +1,7 @@
 package com.androidcodes.urlshortner.api
 
 import com.androidcodes.urlshortner.utils.Constants.Companion.BASE_URL
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

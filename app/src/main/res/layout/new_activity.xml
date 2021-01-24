@@ -75,6 +75,16 @@
                     android:text=""
                     android:textColor="@color/yellow_light"
                     android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/delete_btn"
+                    android:textColor="@color/black_solid"
+                    android:text="Delete"
+                    android:visibility="gone"
+                    android:backgroundTint="@color/yellow_light"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
             </RelativeLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
