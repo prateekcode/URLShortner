@@ -1,5 +1,9 @@
 package com.androidcodes.urlshortner
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +11,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,7 +27,7 @@ import com.androidcodes.urlshortner.views.ApiViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.new_activity.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
 
     private lateinit var viewModel: ApiViewModel
     private lateinit var shortenBtn: CircularProgressButton
@@ -31,7 +36,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var longUrl: String
     private lateinit var shortUrl: String
     private lateinit var recyclerView: RecyclerView
-    private val recyclerAdapter: ShortListAdapter by lazy { ShortListAdapter() }
+    private val recyclerAdapter: ShortListAdapter by lazy { ShortListAdapter(this) }
+    private lateinit var dataList: LiveData<List<UrlData>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +59,8 @@ class MainActivity : AppCompatActivity() {
 
         layout_no_data.visibility = View.GONE
         viewModel.getSavedData()
+
+        dataList = repository.getAllData
 
         // Setup RecyclerView
         setRecyclerView()
@@ -116,10 +124,23 @@ class MainActivity : AppCompatActivity() {
         layoutManager.reverseLayout = true
     }
 
+    override fun onShareBtnClick(position: Int) {
+        val shortUrl = dataList.value!![position].shortUrl
+        Log.d("ITEM", "onShareBtnClick: $shortUrl")
+        //Toast.makeText(this, "Clicked on $shortUrl", Toast.LENGTH_SHORT).show()
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shortUrl)
+        //shareIntent.putExtra(Intent.EXTRA_TEXT, "\nDownload our App from the *Google Play Store* play.google.com/urlshortner")
+        startActivity(Intent.createChooser(shareIntent, "Share Short URL"))
+    }
 
-
-
-
-
+    override fun onCopyBtnClick(position: Int) {
+        val shortUrl = dataList.value!![position].shortUrl
+        Toast.makeText(this, "$shortUrl copied!", Toast.LENGTH_SHORT).show()
+        val clipBoardManager = application.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText("Copied", shortUrl)
+        clipBoardManager.setPrimaryClip(clipData)
+    }
 
 }
