@@ -4,13 +4,14 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -26,6 +27,7 @@ import com.androidcodes.urlshortner.views.ApiViewModel
 import com.androidcodes.urlshortner.views.ApiViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.new_activity.*
+
 
 class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
 
@@ -51,7 +53,7 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
         //viewModel = ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
         //urlViewModel = ViewModelProvider(this).get(UrlViewModel::class.java)
 
-       // viewModel = (application as MainActivity).viewModel
+        // viewModel = (application as MainActivity).viewModel
 
         val repository = Repository(urlDao)
         val viewModelFactory = ApiViewModelFactory(repository)
@@ -65,53 +67,75 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
         // Setup RecyclerView
         setRecyclerView()
 
-        viewModel.getSavedData().observe(this, {
-            data -> recyclerAdapter.setData(data)
+        viewModel.getSavedData().observe(this, { data ->
+            recyclerAdapter.setData(data)
         })
 
-        shortenBtn = shorten_btn
-        shortenBtn.setOnClickListener {
-            if (et_long_url.text.isNotEmpty()) {
-                longUrl = editTextLongUrl.text.toString()
-                shortUrl = ""
-                invalidText = invalid_url
-                invalidText.visibility = View.VISIBLE
-                layout_no_data.visibility = View.GONE
-                shortenBtn.startAnimation()
-                viewModel.shortUrl(API_KEY, longUrl)
-                viewModel.apiResponse.observe(this, Observer { response ->
-                    if (response.isSuccessful) {
-                        shortenBtn.revertAnimation()
-                        et_long_url.setText("")
-                        invalidText.text = response.body()!!.url.shortLink
-                        shortUrl = response.body()!!.url.shortLink
-                        Log.d("RESPONSE", "Getting the response body: ${response.body()}")
-                        Log.d(
-                            "RESPONSE",
-                            "Getting the response short link: ${response.body()!!.url.shortLink}"
-                        )
-                        val entry = UrlData(longUrl, response.body()!!.url.shortLink)
-                        viewModel.insertData(entry)
-
-                    } else {
-                        et_long_url.setText("")
-                        shortenBtn.revertAnimation()
-                        Log.d("RESPONSE", "Getting the response error: ${response.errorBody()}")
-                    }
-                })
-
-            } else {
-                et_long_url.requestFocus()
-                Toast.makeText(applicationContext, "Url must be provided", Toast.LENGTH_SHORT)
-                    .show()
-                return@setOnClickListener
-            }
-        }
+        //calling btn:
+        searchBtn()
 
         delete_btn.setOnClickListener {
             viewModel.deleteData()
         }
 
+    }
+
+    //search fun :
+    private fun searchBtn(){
+        shortenBtn = shorten_btn
+        shortenBtn.setOnClickListener {
+            if(internet_connection()){
+                if (et_long_url.text.isNotEmpty()) {
+                    longUrl = editTextLongUrl.text.toString()
+                    shortUrl = ""
+                    invalidText = invalid_url
+                    invalidText.visibility = View.VISIBLE
+                    layout_no_data.visibility = View.GONE
+                    shortenBtn.startAnimation()
+                    viewModel.shortUrl(API_KEY, longUrl)
+                    viewModel.apiResponse.observe(this, Observer { response ->
+                        if (response.isSuccessful) {
+                            shortenBtn.revertAnimation()
+                            et_long_url.setText("")
+                            invalidText.text = response.body()!!.url.shortLink
+                            shortUrl = response.body()!!.url.shortLink
+                            Log.d("RESPONSE", "Getting the response body: ${response.body()}")
+                            Log.d(
+                                "RESPONSE",
+                                "Getting the response short link: ${response.body()!!.url.shortLink}"
+                            )
+                            val entry = UrlData(longUrl, response.body()!!.url.shortLink)
+                            viewModel.insertData(entry)
+
+                        } else {
+                            et_long_url.setText("")
+                            shortenBtn.revertAnimation()
+                            Log.d("RESPONSE", "Getting the response error: ${response.errorBody()}")
+                        }
+                    })
+
+                } else {
+                    et_long_url.requestFocus()
+                    Toast.makeText(applicationContext, "Url must be provided", Toast.LENGTH_SHORT)
+                        .show()
+                    return@setOnClickListener
+                }
+            }
+            else{
+                Toast.makeText(applicationContext, "No Internet Connection...", Toast.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+
+        }
+    }
+    //checking internet :
+    fun internet_connection(): Boolean {
+        //Check if connected to internet, output accordingly
+        val cm = this.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = cm.activeNetworkInfo
+
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting
     }
 
     //Setting up the RecyclerView
