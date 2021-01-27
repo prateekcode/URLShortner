@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.androidcodes.urlshortner.data.model.UrlData
 import com.androidcodes.urlshortner.model.UrlModel
+import com.androidcodes.urlshortner.model.UrlModel2
 import com.androidcodes.urlshortner.repo.Repository
 import com.androidcodes.urlshortner.utils.Resource
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +15,7 @@ import retrofit2.Response
 class ApiViewModel(private val repository: Repository): ViewModel() {
 
     var apiResponse: MutableLiveData<Response<UrlModel>> = MutableLiveData()
+    var apiResponse2: MutableLiveData<Response<UrlModel2>> = MutableLiveData()
 
     fun shortUrl(apiKey: String, shortUrl: String){
         viewModelScope.launch {
@@ -22,11 +24,19 @@ class ApiViewModel(private val repository: Repository): ViewModel() {
         }
     }
 
+    fun shortUrl2(format:String,url:String){
+        viewModelScope.launch {
+            val response=repository.getApiResult2(format,url)
+            apiResponse2.value=response
+        }
+    }
+
     fun insertData(urlData: UrlData){
         viewModelScope.launch{
             repository.insertData(urlData)
         }
     }
+
 
     fun deleteData(){
         viewModelScope.launch(Dispatchers.IO){

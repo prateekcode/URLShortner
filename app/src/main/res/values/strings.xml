@@ -11,4 +11,9 @@
     <string name="no_url_text">You have not shortened any URLs yet :)</string>
     <string name="dummy_short_url">https://cutt.ly/FjFxUuX</string>
     <string name="dummy_long_url"><![CDATA[https://cutt.ly/api/api.php?key=94081e2ee39ab643abc37bf0e56c13eff5685&short=https://dribbble.com/shots/following/mobile]]></string>
+
+    <string-array name="category_array">
+        <item>Is.gd</item>
+        <item>Cut.ly</item>
+    </string-array>
 </resources>

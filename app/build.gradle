@@ -72,6 +72,9 @@ dependencies {
     //Loading Button Android
     implementation 'br.com.simplepass:loading-button-android:2.2.0'
 
+    //Spinner Button
+    implementation 'com.github.arcadefire:nice-spinner:1.4.4'
+
 
 
 }

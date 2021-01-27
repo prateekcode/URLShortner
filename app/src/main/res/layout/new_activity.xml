@@ -12,7 +12,7 @@
         android:layout_margin="2dp"
         android:backgroundTint="@color/black"
         android:elevation="15dp"
-        app:cardCornerRadius="8dp">
+        app:cardCornerRadius="8dp"> 
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -20,20 +20,34 @@
             android:orientation="vertical"
             android:padding="30dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/shorten_urls"
-                android:textColor="@color/white"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/Header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/shorten_urls"
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/grand_hotel"
-                android:text="@string/cutly"
-                android:textColor="@color/yellow_light" />
+                <TextView
+                    android:layout_below="@+id/Header"
+                    android:id="@+id/tagLine"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/grand_hotel"
+                    android:text="@string/cutly"
+                    android:textColor="@color/yellow_light" />
+                <org.angmarch.views.NiceSpinner
+                    android:background="@drawable/rounded_spinner"
+                    android:id="@+id/nice_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"/>
+
+            </RelativeLayout>
 
             <EditText
                 android:id="@+id/et_long_url"
