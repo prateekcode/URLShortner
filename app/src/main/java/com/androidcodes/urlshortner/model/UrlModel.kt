@@ -4,5 +4,5 @@ data class UrlModel(
     val url: Url
 )
 data class UrlModel2(
-    val url: Url
+    val shorturl: String
 )

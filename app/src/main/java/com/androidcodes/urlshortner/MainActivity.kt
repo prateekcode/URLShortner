@@ -29,7 +29,7 @@ import org.angmarch.views.NiceSpinner
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener,AdapterView.OnItemSelectedListener {
+class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
 
     private lateinit var viewModel: ApiViewModel
     private lateinit var shortenBtn: CircularProgressButton
@@ -43,6 +43,8 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener,A
 
     private lateinit var niceSpinner: NiceSpinner
 
+    private lateinit var selectedUrl:String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.new_activity)
@@ -53,9 +55,18 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener,A
         editTextLongUrl = et_long_url
 
         // Spinner
-        niceSpinner=nice_spinner
-        val dataset: List<String> = LinkedList(listOf("Is.gd","Cut.ly"))
+        niceSpinner = nice_spinner
+        val dataset: List<String> = LinkedList(listOf("Is.gd", "Cut.ly"))
         niceSpinner.attachDataSource(dataset)
+        selectedUrl=dataset[0]
+
+        niceSpinner.setOnSpinnerItemSelectedListener { parent, view, position, id ->
+            val item:String= parent.getItemAtPosition(position) as String
+            selectedUrl=item
+            Log.d("ITEM", "onCreate:$item ")
+
+        }
+
 
         //val viewModelFactory = ApiViewModelFactory(repo)
         //viewModel = ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
@@ -92,7 +103,7 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener,A
     private fun searchBtn(){
         shortenBtn = shorten_btn
         shortenBtn.setOnClickListener {
-            if(internet_connection()){
+            if (internet_connection()) {
                 if (et_long_url.text.isNotEmpty()) {
                     longUrl = editTextLongUrl.text.toString()
                     shortUrl = ""
@@ -100,36 +111,19 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener,A
                     invalidText.visibility = View.VISIBLE
                     layout_no_data.visibility = View.GONE
                     shortenBtn.startAnimation()
-                    viewModel.shortUrl(API_KEY, longUrl)
-                    viewModel.apiResponse.observe(this, Observer { response ->
-                        if (response.isSuccessful) {
-                            shortenBtn.revertAnimation()
-                            et_long_url.setText("")
-                            invalidText.text = response.body()!!.url.shortLink
-                            shortUrl = response.body()!!.url.shortLink
-                            Log.d("RESPONSE", "Getting the response body: ${response.body()}")
-                            Log.d(
-                                "RESPONSE",
-                                "Getting the response short link: ${response.body()!!.url.shortLink}"
-                            )
-                            val entry = UrlData(longUrl, response.body()!!.url.shortLink)
-                            viewModel.insertData(entry)
 
-                        } else {
-                            et_long_url.setText("")
-                            shortenBtn.revertAnimation()
-                            Log.d("RESPONSE", "Getting the response error: ${response.errorBody()}")
-                        }
-                    })
-
+                    if (selectedUrl=="Cut.ly"){
+                        cut_ly(longUrl)
+                    }else{
+                        Is_gd(longUrl)
+                    }
                 } else {
                     et_long_url.requestFocus()
                     Toast.makeText(applicationContext, "Url must be provided", Toast.LENGTH_SHORT)
                         .show()
                     return@setOnClickListener
                 }
-            }
-            else{
+            } else {
                 Toast.makeText(applicationContext, "No Internet Connection...", Toast.LENGTH_SHORT)
                     .show()
                 return@setOnClickListener
@@ -137,6 +131,56 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener,A
 
         }
     }
+
+    //APi'S :
+    private fun cut_ly(longUrl: String) {
+        viewModel.shortUrl(API_KEY, longUrl)
+        viewModel.apiResponse.observe(this, Observer { response ->
+            if (response.isSuccessful) {
+                shortenBtn.revertAnimation()
+                et_long_url.setText("")
+                invalidText.text = response.body()!!.url.shortLink
+                shortUrl = response.body()!!.url.shortLink
+                Log.d("RESPONSE", "Getting the response body: ${response.body()}")
+                Log.d(
+                    "RESPONSE",
+                    "Getting the response short link: ${response.body()!!.url.shortLink}"
+                )
+                val entry = UrlData(longUrl, response.body()!!.url.shortLink)
+                viewModel.insertData(entry)
+
+            } else {
+                et_long_url.setText("")
+                shortenBtn.revertAnimation()
+                Log.d("RESPONSE", "Getting the response error: ${response.errorBody()}")
+            }
+        })
+    }
+
+    private fun Is_gd(longUrl: String) {
+
+        viewModel.shortUrl2("json", longUrl)
+        viewModel.apiResponse2.observe(this, Observer { response ->
+            if (response.isSuccessful) {
+
+                shortenBtn.revertAnimation()
+                et_long_url.setText("")
+                invalidText.text = response.body()!!.shorturl
+//                            Log.d("RESPONSE", "Getting the response body: ${response.body()}")
+//                            Log.d(
+//                                "RESPONSE",
+//                                "Getting the response short link: ${response.body()!!.shorturl}"
+//                            )
+                val entry = UrlData(longUrl, response.body()!!.shorturl)
+                viewModel.insertData(entry)
+            }else {
+                et_long_url.setText("")
+                shortenBtn.revertAnimation()
+                Log.d("RESPONSE", "Getting the response error: ${response.errorBody()}")
+            }
+        })
+    }
+
     //checking internet :
     fun internet_connection(): Boolean {
         //Check if connected to internet, output accordingly
@@ -147,7 +191,7 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener,A
     }
 
     //Setting up the RecyclerView
-    private fun setRecyclerView(){
+    private fun setRecyclerView() {
         recyclerView = recycler_item
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
@@ -170,18 +214,10 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener,A
     override fun onCopyBtnClick(position: Int) {
         val shortUrl = dataList.value!![position].shortUrl
         Toast.makeText(this, "$shortUrl copied!", Toast.LENGTH_SHORT).show()
-        val clipBoardManager = application.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipBoardManager =
+            application.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clipData = ClipData.newPlainText("Copied", shortUrl)
         clipBoardManager.setPrimaryClip(clipData)
-    }
-
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-
-
-    }
-
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-
     }
 
 }

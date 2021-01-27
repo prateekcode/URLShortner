@@ -7,10 +7,3 @@ data class Url(
     val status: Int,
     val title: String
 )
-data class Url2(
-    val date: String,
-    val fullLink: String,
-    val shortLink: String,
-    val status: Int,
-    val title: String
-)

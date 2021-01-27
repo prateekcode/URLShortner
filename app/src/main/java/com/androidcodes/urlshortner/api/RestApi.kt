@@ -13,7 +13,8 @@ interface RestApi {
         @Query("key") key: String,
         @Query("short") url: String
     ): Response<UrlModel>
-
+}
+interface  RestApi2{
     @GET("create.php")
     suspend fun getShort2(
         @Query("format") key: String,
