@@ -8,9 +8,7 @@ import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -27,9 +25,11 @@ import com.androidcodes.urlshortner.views.ApiViewModel
 import com.androidcodes.urlshortner.views.ApiViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.new_activity.*
+import org.angmarch.views.NiceSpinner
+import java.util.*
 
 
-class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
+class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener,AdapterView.OnItemSelectedListener {
 
     private lateinit var viewModel: ApiViewModel
     private lateinit var shortenBtn: CircularProgressButton
@@ -41,13 +41,21 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
     private val recyclerAdapter: ShortListAdapter by lazy { ShortListAdapter(this) }
     private lateinit var dataList: LiveData<List<UrlData>>
 
+    private lateinit var niceSpinner: NiceSpinner
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.new_activity)
 
+
         val urlDao = UrlDatabase.getDatabase(application).urlDao()
 
         editTextLongUrl = et_long_url
+
+        // Spinner
+        niceSpinner=nice_spinner
+        val dataset: List<String> = LinkedList(listOf("Is.gd","Cut.ly"))
+        niceSpinner.attachDataSource(dataset)
 
         //val viewModelFactory = ApiViewModelFactory(repo)
         //viewModel = ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
@@ -165,6 +173,15 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
         val clipBoardManager = application.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clipData = ClipData.newPlainText("Copied", shortUrl)
         clipBoardManager.setPrimaryClip(clipData)
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+
+
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+
     }
 
 }
