@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.androidcodes.urlshortner.data.model.UrlData
 
 
-@Database(entities = [UrlData::class], version = 2, exportSchema = true)
+@Database(entities = [UrlData::class], version = 3, exportSchema = true)
 abstract class UrlDatabase : RoomDatabase() {
 
     abstract fun urlDao(): UrlDao

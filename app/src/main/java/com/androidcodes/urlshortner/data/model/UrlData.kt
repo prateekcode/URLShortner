@@ -13,4 +13,5 @@ data class UrlData(
     var longUrl: String,
     @ColumnInfo(name = "Short Url")
     var shortUrl: String,
+    var urlTitle:String
 )

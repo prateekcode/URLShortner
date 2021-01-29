@@ -26,6 +26,7 @@ import com.androidcodes.urlshortner.views.ApiViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.new_activity.*
 import org.angmarch.views.NiceSpinner
+import java.net.URL
 import java.util.*
 
 
@@ -42,8 +43,8 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
     private lateinit var dataList: LiveData<List<UrlData>>
 
     private lateinit var niceSpinner: NiceSpinner
-
     private lateinit var selectedUrl:String
+    private var titleUrl:String=""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,12 +69,6 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
         }
 
 
-        //val viewModelFactory = ApiViewModelFactory(repo)
-        //viewModel = ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
-        //urlViewModel = ViewModelProvider(this).get(UrlViewModel::class.java)
-
-        // viewModel = (application as MainActivity).viewModel
-
         val repository = Repository(urlDao)
         val viewModelFactory = ApiViewModelFactory(repository)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
@@ -97,9 +92,11 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
             viewModel.deleteData()
         }
 
+
+
     }
 
-    //search fun :
+    //Search Button :
     private fun searchBtn(){
         shortenBtn = shorten_btn
         shortenBtn.setOnClickListener {
@@ -112,6 +109,17 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
                     layout_no_data.visibility = View.GONE
                     shortenBtn.startAnimation()
 
+                    val hostUrl = URL(longUrl)
+                    var title: String = hostUrl.getHost()
+
+                    title = if (title.startsWith("www.")) title.substring(4) else title
+                    for(c in title){
+                        if(c=='.')
+                            break
+                        titleUrl+=c
+                    }
+                    titleUrl=titleUrl.toUpperCase(Locale.ROOT)
+                    Log.d("Title", "onCreate: $titleUrl ")
                     if (selectedUrl=="Cut.ly"){
                         cut_ly(longUrl)
                     }else{
@@ -141,13 +149,11 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
                 et_long_url.setText("")
                 invalidText.text = response.body()!!.url.shortLink
                 shortUrl = response.body()!!.url.shortLink
-                Log.d("RESPONSE", "Getting the response body: ${response.body()}")
-                Log.d(
-                    "RESPONSE",
-                    "Getting the response short link: ${response.body()!!.url.shortLink}"
-                )
-                val entry = UrlData(longUrl, response.body()!!.url.shortLink)
+
+                // Adding Data
+                val entry = UrlData(longUrl, response.body()!!.url.shortLink,titleUrl)
                 viewModel.insertData(entry)
+                titleUrl=""
 
             } else {
                 et_long_url.setText("")
@@ -166,14 +172,13 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
                 shortenBtn.revertAnimation()
                 et_long_url.setText("")
                 invalidText.text = response.body()!!.shorturl
-//                            Log.d("RESPONSE", "Getting the response body: ${response.body()}")
-//                            Log.d(
-//                                "RESPONSE",
-//                                "Getting the response short link: ${response.body()!!.shorturl}"
-//                            )
-                val entry = UrlData(longUrl, response.body()!!.shorturl)
+
+                // Adding Data
+                val entry = UrlData(longUrl, response.body()!!.shorturl,titleUrl)
                 viewModel.insertData(entry)
-            }else {
+                titleUrl=""
+
+            } else {
                 et_long_url.setText("")
                 shortenBtn.revertAnimation()
                 Log.d("RESPONSE", "Getting the response error: ${response.errorBody()}")
@@ -181,7 +186,7 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
         })
     }
 
-    //checking internet :
+    //Checking Internet :
     fun internet_connection(): Boolean {
         //Check if connected to internet, output accordingly
         val cm = this.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -190,7 +195,7 @@ class MainActivity : AppCompatActivity(), ShortListAdapter.OnItemClickListener {
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting
     }
 
-    //Setting up the RecyclerView
+    //Setting up the RecyclerView :
     private fun setRecyclerView() {
         recyclerView = recycler_item
         val layoutManager = LinearLayoutManager(this)

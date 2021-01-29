@@ -19,6 +19,7 @@ class ShortListAdapter(private val onItemClickListener: OnItemClickListener): Re
     inner class MyViewHolder(view: View, onItemClickListener: OnItemClickListener):RecyclerView.ViewHolder(view){
         val shortUrl = view.short_url
         val longUrl = view.long_url
+        val titleUrl=view.url_title
         init {
             view.share_short_url.setOnClickListener {
                 onItemClickListener.onShareBtnClick(adapterPosition)
@@ -38,6 +39,7 @@ class ShortListAdapter(private val onItemClickListener: OnItemClickListener): Re
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.shortUrl.text = dataList[position].shortUrl
         holder.longUrl.text = dataList[position].longUrl
+        holder.titleUrl.text=dataList[position].urlTitle
     }
 
     override fun getItemCount(): Int {
